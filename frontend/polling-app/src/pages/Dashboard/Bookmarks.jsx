@@ -16,8 +16,6 @@ const Bookmarks = () => {
   const navigate = useNavigate();
 
   const [bookmarkedPolls, setBookmarkedPolls] = useState([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const fetchAllPolls = async () => {
@@ -28,16 +26,13 @@ const Bookmarks = () => {
       const response = await axiosInstance.get(API_PATHS.POLLS.GET_BOOKMARKED);
 
       // Debugging
-      // console.log("API Response:", response.data); 
-      
+      // console.log("API Response:", response.data);
+
       const polls = response.data?.bookmarkedPolls ?? []; // Ensure it defaults to an empty array
 
       if (polls.length > 0) {
         setBookmarkedPolls((prevPolls) => [...prevPolls, ...polls]);
-        setHasMore(polls.length === PAGE_SIZE);
-      } else {
-        setHasMore(false);
-      }
+      } 
     } catch (error) {
       console.log("Something went wrong. Please try again later!", error);
     } finally {
@@ -45,14 +40,11 @@ const Bookmarks = () => {
     }
   };
 
-  const loadMorePolls = () => {
-    setPage((prevPage) => prevPage + 1);
-  };
 
   // Fetch data when page changes (pagination)
   useEffect(() => {
     fetchAllPolls();
-  }, [page]);
+  }, []);
 
   return (
     <DashboardLayout activeMenu="BookMarks">
@@ -68,32 +60,23 @@ const Bookmarks = () => {
           />
         )}
 
-        {/*infinite scroll pagination*/}
-        <InfiniteScroll
-          dataLength={bookmarkedPolls.length}
-          next={loadMorePolls}
-          hasMore={hasMore}
-          loader={<h4 className="info-text">Loading...</h4>}
-          endMessgae={<p className="info-text">No more polls to display.</p>}
-        >
-          {bookmarkedPolls.map((poll) => (
-            <PollCard
-              key={`dashboard_${poll._id}`}
-              pollId={poll._id}
-              question={poll.question}
-              type={poll.type}
-              options={poll.options}
-              voters={poll.voters.length || 0}
-              responses={poll.responses || []}
-              creatorProfileImg={poll.creator.profileImageUrl || null}
-              creatorName={poll.creator.fullname}
-              creatorUsername={poll.creator.username}
-              userHasVoted={poll.userHasVoted || false}
-              isPollClosed={poll.closed || false}
-              createdAt={poll.createdAt || false}
-            />
-          ))}
-        </InfiniteScroll>
+        {bookmarkedPolls.map((poll) => (
+          <PollCard
+            key={`dashboard_${poll._id}`}
+            pollId={poll._id}
+            question={poll.question}
+            type={poll.type}
+            options={poll.options}
+            voters={poll.voters.length || 0}
+            responses={poll.responses || []}
+            creatorProfileImg={poll.creator.profileImageUrl || null}
+            creatorName={poll.creator.fullname}
+            creatorUsername={poll.creator.username}
+            userHasVoted={poll.userHasVoted || false}
+            isPollClosed={poll.closed || false}
+            createdAt={poll.createdAt || false}
+          />
+        ))}
       </div>
     </DashboardLayout>
   );

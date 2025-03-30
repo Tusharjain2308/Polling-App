@@ -16,8 +16,6 @@ const VotedPolls = () => {
   const navigate = useNavigate();
 
   const [votedPolls, setVotedPolls] = useState([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const fetchAllPolls = async () => {
@@ -31,10 +29,7 @@ const VotedPolls = () => {
 
       if (response.data?.polls?.length > 0) {
         setVotedPolls((prevPolls) => [...prevPolls, ...response.data.polls]);
-        setHasMore(response.data.polls.length === PAGE_SIZE);
-      } else {
-        setHasMore(false);
-      }
+      } 
     } catch (error) {
       console.log("Something went wrong. Please try again later!", error);
     } finally {
@@ -42,14 +37,6 @@ const VotedPolls = () => {
     }
   };
 
-  const loadMorePolls = () => {
-    setPage((prevPage) => prevPage + 1);
-  };
-
-  // Fetch data when page changes (pagination)
-  useEffect(() => {
-      fetchAllPolls();
-  }, [page]);
 
   return (
     <DashboardLayout activeMenu="Voted Poll">
@@ -64,15 +51,7 @@ const VotedPolls = () => {
             onClick={() => navigate("/dashboard")}
           />
         )}
-
-        {/*infinite scroll pagination*/}
-        <InfiniteScroll
-          dataLength={votedPolls.length}
-          next={loadMorePolls}
-          hasMore={hasMore}
-          loader={<h4 className="info-text">Loading...</h4>}
-          endMessgae={<p className="info-text">No more polls to display.</p>}
-        >
+       
           {votedPolls.map((poll) => (
             <PollCard
               key={`dashboard_${poll._id}`}
@@ -90,7 +69,6 @@ const VotedPolls = () => {
               createdAt={poll.createdAt || false}
             />
           ))}
-        </InfiniteScroll>
       </div>
     </DashboardLayout>
   );
