@@ -13,7 +13,7 @@ const UserProfileInfo = ({ imgUrl, fullname, username, createdAt }) => {
           className="w-10 h-10 rounded-full border-none"
         />
       ) : (
-        <CharAvatar fullName={fullname} className="text-[13px]" />
+        <CharAvatar fullname={fullname} className="text-[13px]" />
       )}
 
       <div>

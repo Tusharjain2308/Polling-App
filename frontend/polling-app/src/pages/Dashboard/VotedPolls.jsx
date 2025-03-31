@@ -5,11 +5,9 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import PollCard from "../../components/PollCards/PollCard";
-import InfiniteScroll from "react-infinite-scroll-component";
 import CREATE_ICON from "../../assets/images/create.png";
 import EmptyCard from "../../components/cards/EmptyCard";
 
-const PAGE_SIZE = 10;
 
 const VotedPolls = () => {
   useUserAuth();
@@ -21,21 +19,26 @@ const VotedPolls = () => {
   const fetchAllPolls = async () => {
     if (loading) return;
     setLoading(true);
-
+  
     try {
       const response = await axiosInstance.get(API_PATHS.POLLS.VOTED_POLLS);
-
-      // console.log("API Response:", response.data.polls); use for debugging
-
+  
       if (response.data?.polls?.length > 0) {
-        setVotedPolls((prevPolls) => [...prevPolls, ...response.data.polls]);
-      } 
+        setVotedPolls(response.data.polls); // Fix: Directly set the fetched polls
+      } else {
+        setVotedPolls([]); // Ensure it resets if no polls are found
+      }
     } catch (error) {
       console.log("Something went wrong. Please try again later!", error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(()=> {
+    fetchAllPolls();
+    return ()=> {};
+  },[]);
 
 
   return (

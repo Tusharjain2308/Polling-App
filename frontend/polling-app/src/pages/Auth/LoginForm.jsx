@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import AuthLayout from "../../components/layout/AuthLayout";
 import AuthInput from "../../components/input/AuthInput";
 import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from "../../utils/helper.js";
 import axiosInstance from "../../utils/axiosInstance.js";
 import { API_PATHS } from "../../utils/apiPaths.js";
-import { useContext } from "react";
 import { UserContext } from "../../context/UserContext.jsx";
 
 const LoginForm = () => {
@@ -15,27 +14,24 @@ const LoginForm = () => {
 
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!validateEmail(email)) {
-      setError("Please enter a valid email Address");
+      setError("Please enter a valid email address");
       return;
     }
 
     if (!password) {
-      setError("Please enter your Password");
+      setError("Please enter your password");
       return;
     }
 
     setError("");
 
-    //Login API
     try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
-        email,
-        password,
-      });
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, { email, password });
       const { token, user } = response.data;
 
       if (token) {
@@ -44,23 +40,17 @@ const LoginForm = () => {
         navigate("/dashboard");
       }
     } catch (error) {
-      if (error.response && error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+      setError(error.response?.data.message || "Something went wrong. Please try again.");
     }
   };
 
   return (
     <AuthLayout pagetype="login">
-      <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center">
-        <h3 className="text-xl font-semibold text-black">Welcome Back</h3>
-        <p className="text-xs text-slate-700 mt-[5px] mb-6">
-          Please enter your details to log in
-        </p>
+      <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center space-y-6">
+        <h3 className="text-2xl font-bold text-gray-900">Welcome Back</h3>
+        <p className="text-sm text-gray-600">Please enter your details to log in</p>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="space-y-4">
           <AuthInput
             value={email}
             onChange={({ target }) => setEmail(target.value)}
@@ -77,17 +67,14 @@ const LoginForm = () => {
             type="password"
           />
 
-          {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          <button type="submit" className="btn-primary">
+          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
             LOGIN
           </button>
 
-          <p className="text-[13px] text-slate-800 mt-3">
-            Don't have an account?{" "}
-            <Link className="font-medium text-primary underline" to="/signup">
-              SignUp
-            </Link>
+          <p className="text-sm text-gray-700 text-center">
+            Don't have an account? <Link className="font-medium text-blue-600 hover:underline" to="/signup">Sign Up</Link>
           </p>
         </form>
       </div>
