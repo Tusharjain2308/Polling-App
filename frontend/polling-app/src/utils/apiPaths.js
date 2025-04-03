@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:8000';
+export const BASE_URL = 'https://polling-app-rl2y.onrender.com';
 
 // uitls/apiPaths.js
 export const API_PATHS = {
