@@ -29,19 +29,19 @@ const MyPolls = () => {
 
     try {
       const response = await axiosInstance.get(
-        `${API_PATHS.POLLS.GET_ALL}?page=${overridePage}&limit=${PAGE_SIZE}&type=${filterType}&creator=${user._id}`
+        `${API_PATHS.POLLS.GET_ALL}?page=${overridePage}&limit=${PAGE_SIZE}&type=${filterType}`
       );
 
-      // console.log("API Response:", response.data.polls); use for debugging
+      let filteredPolls = response.data.polls.filter(
+        (poll) => poll.creator._id === user._id
+      );
 
-      if (response.data?.polls?.length > 0) {
+      if (filteredPolls.length > 0) {
         setAllPolls((prevPolls) =>
-          overridePage === 1
-            ? response.data.polls
-            : [...prevPolls, ...response.data.polls]
+          overridePage === 1 ? filteredPolls : [...prevPolls, ...filteredPolls]
         );
         setStats(response.data?.stats || []);
-        setHasMore(response.data.polls.length === PAGE_SIZE);
+        setHasMore(filteredPolls.length === PAGE_SIZE);
       } else {
         setHasMore(false);
       }
